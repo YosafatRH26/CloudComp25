@@ -1,0 +1,15 @@
+# Composer
+api/vendor/
+
+# Environment file
+api/.env
+
+# Log files (jika ada)
+*.log
+
+# VS Code settings
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db

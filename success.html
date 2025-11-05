@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pendaftaran Berhasil - Cloud Computing 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at top, #0f0f1e, #1a1a2e);
+    color: #fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    overflow:hidden;
+}
+.container {
+    position: relative;
+    background: rgba(20,20,40,0.7);
+    border-radius: 20px;
+    padding: 50px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    box-shadow:0 0 20px #ff00ff, 0 0 40px #00ffff inset;
+    overflow:hidden;
+}
+/* Border neon statis tanpa animasi */
+.container::before {
+    content:'';
+    position:absolute;
+    top:-2px; left:-2px; right:-2px; bottom:-2px;
+    border:2px solid #ff00ff;
+    border-radius:20px;
+    pointer-events:none;
+    box-shadow:0 0 20px #ff00ff,0 0 40px #00ffff;
+}
+h1 { font-size:2.5em; margin-bottom:20px; color:#ff00ff;}
+p, td { color:#ccc; font-weight:500; }
+table { width:100%; max-width:400px; margin:1rem auto; border-collapse:collapse; text-align:left; }
+td:first-child { color:#aaa; font-weight:600; width:35%; padding:8px 5px; }
+td:last-child { padding:8px 5px; }
+button {
+    margin-top:30px;
+    padding:12px 25px;
+    border:none;
+    border-radius:12px;
+    background: linear-gradient(45deg,#ff00ff,#00ffff);
+    color:#000;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 0 15px #ff00ff,0 0 25px #00ffff;
+}
+button:hover { transform: translateY(-2px); filter: brightness(1.2);}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🎉 Pendaftaran Berhasil!</h1>
+    <p>Selamat <strong id="fullName"></strong>, Anda berhasil terdaftar.</p>
+    <h3>Detail Anda</h3>
+    <table>
+        <tr><td>Nama Lengkap:</td><td id="fullNameDetail"></td></tr>
+        <tr><td>Email:</td><td id="emailDetail"></td></tr>
+        <tr><td>Tanggal Lahir:</td><td id="birthdateDetail"></td></tr>
+        <tr><td>Tanggal Registrasi:</td><td id="regDateDetail"></td></tr>
+    </table>
+    <button onclick="window.location.href='index.html'">← Kembali ke Halaman Registrasi</button>
+</div>
+
+<script>
+window.onload = async () => {
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('id');
+    if(!userId){ document.querySelector('.container').innerHTML='<h1 style="color:#ff6b6b;">Error: User ID tidak ditemukan.</h1>'; return; }
+    try {
+        const res = await fetch(`/ComGraph/api/get_user.php?id=${userId}`);
+        const user = await res.json();
+        const birthdate = new Date(user.birthdate).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+        const regDate = new Date(user.registration_date).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+        document.getElementById('fullName').textContent = user.name;
+        document.getElementById('fullNameDetail').textContent = user.name;
+        document.getElementById('emailDetail').textContent = user.email;
+        document.getElementById('birthdateDetail').textContent = birthdate;
+        document.getElementById('regDateDetail').textContent = regDate;
+    } catch(err){ document.querySelector('.container').innerHTML=`<h1 style="color:#ff6b6b;">Error: ${err.message}</h1>`;}
+};
+</script>
+</body>
+</html>

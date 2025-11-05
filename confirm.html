@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konfirmasi Akun - Cloud Computing 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+html, body {
+    height: 100%;
+    margin:0;
+    padding:0;
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at top, #0f0f1e, #1a1a2e);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+body::-webkit-scrollbar { display: none; }
+body { -ms-overflow-style: none; scrollbar-width: none; }
+
+.container {
+    position: relative;
+    background: rgba(20,20,40,0.7);
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 0 20px #8a6cff, 0 0 40px #6c8aff inset;
+    overflow: hidden;
+}
+
+.container::before {
+    content:'';
+    position:absolute;
+    top:-2px; left:-2px; right:-2px; bottom:-2px;
+    border: 2px solid #000000;
+    border-radius: 20px;
+    pointer-events: none;
+    box-shadow: 0 0 20px #680707, 0 0 40px #6c8aff;
+}
+
+h1 { font-size:2em; color:#ff00ff; margin-bottom:15px; }
+p { color:#ccc; margin-bottom:20px; }
+.button {
+    display: inline-block;
+    padding: 12px 25px;
+    border-radius: 12px;
+    background: linear-gradient(45deg,#ff00ff,#00ffff);
+    color: #000;
+    font-weight:700;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+.button:hover { transform: translateY(-2px); filter: brightness(1.2); }
+.success { color:#4caf50; font-weight:700; }
+.error { color:#ff6b6b; font-weight:700; }
+</style>
+</head>
+<body>
+<div class="container" id="messageContainer">
+<h1>Memverifikasi akun Anda...</h1>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const container = document.getElementById('messageContainer');
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+
+    if (!token) {
+        container.innerHTML = `<h1 class="error">Token Tidak Ditemukan</h1>
+                               <p>Silakan cek kembali link konfirmasi Anda.</p>
+                               <a class="button" href="index.html">← Kembali ke Halaman Registrasi</a>`;
+        return;
+    }
+
+    try {
+        const res = await fetch(`api/confirm.php?token=${token}`);
+        const data = await res.json();
+        if (data.success) {
+            container.innerHTML = `<h1 class="success">${data.success}</h1>
+                                   <p>Nama: ${data.user.name}<br>Email: ${data.user.email}</p>
+                                   <a class="button" href="index.html">← Kembali ke Halaman Registrasi</a>`;
+        } else {
+            container.innerHTML = `<h1 class="error">${data.error}</h1>
+                                   <a class="button" href="index.html">← Kembali ke Halaman Registrasi</a>`;
+        }
+    } catch (err) {
+        container.innerHTML = `<h1 class="error">Terjadi Kesalahan saat memproses.</h1>`;
+    }
+});
+</script>
+</body>
+</html>

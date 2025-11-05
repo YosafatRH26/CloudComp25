@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pendaftaran Cloud Computing 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin:0; padding:0; font-family: 'Orbitron', sans-serif; }
+
+html, body {
+    height: 100%;
+    background: radial-gradient(circle at top, #0f0f1e, #1a1a2e);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* smooth scrolling untuk iOS */
+}
+
+/* Hilangkan scrollbar untuk semua browser */
+body::-webkit-scrollbar { display: none; }
+body { -ms-overflow-style: none; scrollbar-width: none; }
+
+body { perspective: 1000px; }
+
+.form-container {
+    position: relative;
+    background: rgba(20, 20, 40, 0.7);
+    border-radius: 20px;
+    padding: 40px;
+    width: 90%;
+    max-width: 500px;
+    text-align: left;
+    box-shadow: 0 0 20px #8a6cff, 0 0 40px #6c8aff inset;
+    overflow: hidden;
+}
+
+.form-container::before {
+    content:'';
+    position:absolute;
+    top:-2px; left:-2px; right:-2px; bottom:-2px;
+    border: 2px solid #000000;
+    border-radius: 20px;
+    pointer-events: none;
+    box-shadow: 0 0 20px #680707, 0 0 40px #6c8aff;
+}
+
+h1 { text-align:center; color:#ff00ff; font-size:2em; margin-bottom:10px; }
+h2 { text-align:center; color:#00ffff; margin-bottom:25px; font-weight:400; }
+label { display:block; margin-bottom:6px; font-weight:600; color:#ccc; }
+.input-group { margin-bottom:20px; }
+input {
+    width: 100%;
+    background: rgba(30, 30, 60, 0.7);
+    color: #fff;
+    border: 1px solid #8a6cff;
+    padding: 12px;
+    border-radius:10px;
+    font-size:14px;
+    transition: 0.3s;
+}
+input:focus { border-color:#ff00ff; box-shadow:0 0 10px #ff00ff; outline:none; }
+button[type="submit"] {
+    width: 100%;
+    background: linear-gradient(45deg,#ff00ff,#00ffff);
+    border:none;
+    padding:14px;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+    color:#000;
+    font-size:1.1em;
+    box-shadow:0 0 15px #ff00ff,0 0 25px #00ffff;
+    transition: all 0.3s ease;
+}
+button[type="submit"]:hover { transform: translateY(-2px); filter: brightness(1.2); }
+footer { margin-top:40px; text-align:center; color:#888; font-size:0.8em; }
+
+/* Responsif untuk layar kecil */
+@media (max-width: 480px) {
+    .form-container { padding: 25px; }
+    h1 { font-size:1.6em; }
+    h2 { font-size:1em; margin-bottom:20px; }
+    input { font-size:13px; padding:10px; }
+    button[type="submit"] { font-size:1em; padding:12px; }
+}
+</style>
+</head>
+<body>
+<div class="form-container">
+    <h1>Cloud Computing 2025</h1>
+    <h2>Formulir Pendaftaran</h2>
+    <form id="registrationForm">
+        <div class="input-group">
+            <label for="fullName">Nama Lengkap:</label>
+            <input type="text" id="fullName" name="fullName" required>
+        </div>
+        <div class="input-group">
+            <label for="studentEmail">Email Mahasiswa:</label>
+            <input type="email" id="studentEmail" name="studentEmail" required>
+        </div>
+        <div class="input-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="input-group">
+            <label for="confirmPassword">Konfirmasi Password:</label>
+            <input type="password" id="confirmPassword" required>
+            <small id="password_error" style="color:#ff00ff; display:none;">Password tidak cocok!</small>
+        </div>
+        <div class="input-group">
+            <label for="birthdate">Tanggal Lahir:</label>
+            <input type="date" id="birthdate" name="birthdate" required>
+        </div>
+        <button type="submit">Daftar Sekarang</button>
+    </form>
+</div>
+
+<script>
+const form = document.getElementById('registrationForm');
+const errorText = document.getElementById('password_error');
+
+form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const pass = document.getElementById('password').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    if(pass !== confirm){ errorText.style.display='block'; return; }
+    errorText.style.display='none';
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    delete data.confirmPassword;
+
+    const button = form.querySelector('button');
+    button.textContent='Mendaftar...'; button.disabled=true;
+
+    try {
+        const res = await fetch('http://localhost/ComGraph/api/register.php',{
+            method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if(result.success) window.location.href=result.redirectUrl;
+        else throw new Error(result.error || 'Gagal mendaftar');
+    } catch(err){ errorText.textContent=err.message; errorText.style.display='block'; }
+    finally{ button.textContent='Daftar Sekarang'; button.disabled=false; }
+});
+</script>
+</body>
+</html>
