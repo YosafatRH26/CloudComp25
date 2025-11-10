@@ -1,0 +1,50 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # 3️⃣ Install dependencies
+      - name: Install NPM dependencies
+        run: npm ci
+
+      # 4️⃣ Zip the project (exclude unnecessary files)
+      - name: Package for deployment
+        run: zip -r deploy.zip . -x ".git" "node_modules/*" ".env"
+
+      # 5️⃣ Setup SSH to server
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_KEY }}
+
+      # 6️⃣ Upload and deploy
+      - name: Upload and extract on server
+        run: |
+          scp -o StrictHostKeyChecking=no deploy.zip ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/${{ secrets.SERVER_USER }}/deploy.zip
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            cd /home/${{ secrets.SERVER_USER }}/web/yosafat.team6.web.id/public_html &&
+            unzip -o /home/${{ secrets.SERVER_USER }}/deploy.zip &&
+            rm /home/${{ secrets.SERVER_USER }}/deploy.zip &&
+            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&
+            sudo apt-get install -y nodejs &&
+            npm install &&
+            pkill -f server.js || true &&
+            nohup node server.js > app.log 2>&1 &
+          "
